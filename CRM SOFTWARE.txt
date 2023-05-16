@@ -1,0 +1,61 @@
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+
+struct Contact {
+    int id;
+    std::string name;
+    // Additional contact fields...
+};
+
+struct Deal {
+    int id;
+    std::string name;
+    int contactId;
+    // Additional deal fields...
+};
+
+void syncDealsWithContacts(std::vector<Contact>& contacts, std::vector<Deal>& deals) {
+    // Create a map to store contacts by their ID for quick access
+    std::unordered_map<int, Contact> contactMap;
+    for (const auto& contact : contacts) {
+        contactMap[contact.id] = contact;
+    }
+
+    // Iterate over the deals and update their associated contacts
+    for (auto& deal : deals) {
+        // Check if the deal's contact ID is present in the contact map
+        auto contactIt = contactMap.find(deal.contactId);
+        if (contactIt != contactMap.end()) {
+            // Update the deal's contact with the corresponding contact from the contact map
+            deal.name = contactIt->second.name;
+        }
+    }
+}
+
+int main() {
+    // Sample data
+    std::vector<Contact> contacts = {
+        {1, "John"},
+        {2, "Alice"},
+        {3, "Bob"},
+        // Add more contacts...
+    };
+
+    std::vector<Deal> deals = {
+        {101, "Deal 1", 1},  // Associated with John
+        {102, "Deal 2", 2},  // Associated with Alice
+        {103, "Deal 3", 4},  // Contact ID not found (ignored)
+        // Add more deals...
+    };
+
+    // Sync the deals with the contacts
+    syncDealsWithContacts(contacts, deals);
+
+    // Display the updated deals
+    for (const auto& deal : deals) {
+        std::cout << "Deal ID: " << deal.id << ", Name: " << deal.name << std::endl;
+    }
+
+    return 0;
+}
